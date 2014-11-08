@@ -69,30 +69,11 @@
 \begin_body
 
 \begin_layout Title
-Solutions 1
-\end_layout
-
-\begin_layout Author
-Sagi Kedmi
-\end_layout
-
-\begin_layout Section
-Q1
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\mathbb{E}\left[X_{1}X_{2}\right]=
-\]
-
+SSP
+\begin_inset Newline newline
 \end_inset
 
-
-\end_layout
-
-\begin_layout Section
-Q2 
+Solution 1 
 \end_layout
 
 \end_body
