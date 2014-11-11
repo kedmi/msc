@@ -1,5 +1,5 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass article
@@ -12,45 +12,41 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
-\use_geometry false
-\use_package amsmath 1
-\use_package amssymb 1
-\use_package cancel 1
-\use_package esint 1
-\use_package mathdots 1
-\use_package mathtools 1
-\use_package mhchem 1
-\use_package stackrel 1
-\use_package stmaryrd 1
-\use_package undertilde 1
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
-\cite_engine_type default
-\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -73,7 +69,425 @@ Distributed Algorithms
 \begin_inset Newline newline
 \end_inset
 
-Ex1 Solution
+Ex1
+\end_layout
+
+\begin_layout Author
+Sagi Kedmi
+\begin_inset Newline newline
+\end_inset
+
+200468593
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Assumptions
+\end_layout
+
+\begin_layout Itemize
+The system is 
+\emph on
+reliable
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+The system is 
+\emph on
+asynchronous
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+The system is a connected graph of 
+\emph on
+processors
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+Each processor in the system: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+has its own 
+\emph on
+id.
+\end_layout
+
+\begin_layout Itemize
+has an ordered list of the ids of its neighbors.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Definitions
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Merge Generation 
+\emph default
+- the number of merges that processors had gone through inside a connected
+ component.
+ Therefore it holds that after the 
+\begin_inset Formula $k^{th}$
+\end_inset
+
+ merge, the size of the connected component is at least 
+\begin_inset Formula $2^{k}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Good Merge - 
+\emph default
+a merge between two different connected components that have the same merge
+ generation.
+ The merge is being done by choosing the processor(node) with the minimum
+ id on the edge that connects the two connected components as the leader.
+ (After the leadership had been 'bestowed' a notification is broadcasted
+ to every node(processor) in the newly merged connected component, and the
+ merge generation of the newly merged connected component is incremented)
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Edge weight 
+\emph default
+- every node is denoted by a 2-tuple of the id of its nodes(processors).
+ The 2-tuples are ordered lexicographically.
+ e.g.
+ (2,5) < (3,1)
+\end_layout
+
+\begin_layout Section
+Communication Protocol Specification
+\end_layout
+
+\begin_layout Standard
+In the table below I defined the message types of our protocol.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="10cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Msg Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Payload
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+Merge
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{merge,k}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k$
+\end_inset
+
+ is the merge generation of the connected component that sends the message
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+Probe Request
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{probe_req, ccid,k}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k$
+\end_inset
+
+ is the merge generation of the connected component 
+\begin_inset Formula $ccid$
+\end_inset
+
+ is the id of a chosen node(processor) in the connected component (We will
+ also refer to it as the name of the connected component or the leader of
+ the connected component) {We'll use this kind of message to probe if the
+ node that the 'probe_req' message is being sent to is in the same connected
+ component as the sender of the 'probe_req' message}
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Probe Response
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{probe_res,
+\begin_inset Formula $v\in\{True,False\}$
+\end_inset
+
+}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $v=True$
+\end_inset
+
+ if the receiver of the 'probe_req' message is in the same connected component
+ of the sender of the 'probe_req' message
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Broadcast Leadership
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{bcast_leader,
+\begin_inset Formula $ccid$
+\end_inset
+
+, 
+\begin_inset Formula $k$
+\end_inset
+
+ }
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $k$
+\end_inset
+
+ is the merge generation of the connected component 
+\begin_inset Formula $ccid$
+\end_inset
+
+ is the id of a chosen node(processor) in the connected component (We will
+ also refer to it as the name of the connected component or the leader of
+ the connected component).
+ If, for example, two connected components are merged, the message is sent
+ to make sure every node in the new connected component knows who is its
+ leader.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bestow Leadership
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{bstw_leader}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+If two connected components are merged, the bstw_leader message is sent
+ from the leaders of the old connected components to the nodes of the edge
+ that connected the connected components, so the minimal node in that edge
+ could use the bcast_leader to make sure every node in the newly merged
+ connected component knows who its leader is.
+ (the bstw_leader message also tells the minimal node in the connecting
+ edge, i.e.
+ the new leader, to change the direction of the edges in the old connected
+ components so that it points to him)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Protocol Specification
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+:
 \end_layout
 
 \end_body
