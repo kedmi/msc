@@ -1,7 +1,8 @@
 \documentclass[10pt]{article}
 \usepackage{fullpage}
-\usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 \begin{document}
 \title{Statistical Signal Processing\\Exercise 2}
 \author{Sagi Kedmi}
@@ -15,5 +16,12 @@ Using the Law of the Unconscious Statistician:
 \begin{center}
 $\mathcal{D}_{KL}\left({f_{1}||f_{2}}\right)=\mathbb{E}_{f_{1}}\left[\mathrm{log}\left({\dfrac{f_{1}(y)}{f_{2}(y)}}\right)\right]={\displaystyle \int_{-\infty}^\infty \mathrm{log}\left({\dfrac{f_{1}(y)}{f_{2}(y)}}\right)f_{1}(y)\,\mathrm{d}y}={\displaystyle \int_{-\infty}^\infty -\mathrm{log}\left({\dfrac{f_{2}(y)}{f_{1}(y)}}\right)f_{1}(y)\,\mathrm{d}y}$
 \end{center}
-Known inequality: $\forall x\geq 0 : \mathrm{log}(x) \leq x-1$
+Known inequality: $\forall x\geq 0 : \mathrm{log}(x) \leq x-1$. $f_{1}$ and $f_{2}$ are probability distributions, hence $\dfrac{f_{2}(y)}{f_{1}(y)}\geq 0$. Therefore:
+\begin{center}
+$\mathcal{D}_{KL}\left({f_{1}||f_{2}}\right)={\displaystyle \int_{-\infty}^\infty -\mathrm{log}\left({\dfrac{f_{2}(y)}{f_{1}(y)}}\right)f_{1}(y)\,\mathrm{d}y}\geq {\displaystyle \int_{-\infty}^\infty \left(-{\dfrac{f_{2}(y)}{f_{1}(y)}} + 1\right)f_{1}(y)\,\mathrm{d}y}={\displaystyle \int_{-\infty}^\infty -f_{2}(y)\,\mathrm{d}y}+{\displaystyle \int_{-\infty}^\infty f_{1}(y)\,\mathrm{d}y}$
+\end{center}
+\begin{center}
+$\mathcal{D}_{KL}\left({f_{1}||f_{2}}\right)\geq -1 +1 = 0.$\\\
+$\hfill \blacksquare$
+\end{center}
 \end{document} 
