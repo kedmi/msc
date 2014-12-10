@@ -1,0 +1,930 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman ae
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Distributed Algorithm Ex2
+\end_layout
+
+\begin_layout Author
+Sagi Kedmi, ID=200468593
+\begin_inset Newline newline
+\end_inset
+
+Gil Cohen, ID=?
+\end_layout
+
+\begin_layout Date
+Dec.
+ 1, 2014
+\end_layout
+
+\begin_layout Section
+Preliminaries
+\end_layout
+
+\begin_layout Subsection
+The
+\emph on
+ Consensus
+\emph default
+ Problem
+\end_layout
+
+\begin_layout Standard
+In standard distributed algorithms literature the problem we face is known
+ as the 
+\emph on
+Agreement / Consensus 
+\emph default
+problem.
+\end_layout
+
+\begin_layout Definition
+(
+\emph on
+Consensus
+\emph default
+).
+ A protocol for n parties 
+\begin_inset Formula $\mathcal{P}=\{P_{1},...,P_{n}\}$
+\end_inset
+
+ where a distinguished leader 
+\begin_inset Formula $G\in\mathcal{P}$
+\end_inset
+
+ wishes to broadcast an initial value 
+\emph on
+m
+\emph default
+ solves the 
+\emph on
+Consensus 
+\emph default
+problem if it conforms with the following two conditions:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Agreement
+\series default
+ - If a correct node signals that 
+\emph on
+G
+\emph default
+ broadcasted a certain value, all correct nodes will signal the same.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Validity 
+\series default
+- If the leader is correct, all correct nodes will signal that it has broadcaste
+d 
+\emph on
+m
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Section
+Question 1 - Gradecast
+\end_layout
+
+\begin_layout Subsection
+Gradecast Algorithm
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\bar under
+Model:
+\series default
+\bar default
+ The system consists of 
+\emph on
+n 
+\emph default
+nodes, out of which up to 
+\begin_inset Formula $t<\frac{n}{3}$
+\end_inset
+
+ may be 
+\emph on
+Byzantine
+\emph default
+.
+ Communication assumed to be synchronous.
+ The communication graph is complete graph.
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+\bar under
+Gradecast:
+\bar default
+ 
+\series default
+A sender node 
+\emph on
+
+\begin_inset Formula $q$
+\end_inset
+
+ 
+\emph default
+sends a value 
+\emph on
+
+\begin_inset Formula $v$
+\end_inset
+
+ 
+\emph default
+to all other nodes.
+ Each node 
+\begin_inset Formula $p$
+\end_inset
+
+'s output is a pair 
+\begin_inset Formula $\left\langle v_{p},c_{p}\right\rangle $
+\end_inset
+
+ where 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+ is the value 
+\begin_inset Formula $p$
+\end_inset
+
+ thinks 
+\begin_inset Formula $q$
+\end_inset
+
+ has sent and 
+\begin_inset Formula $c_{p}$
+\end_inset
+
+ is 
+\begin_inset Formula $p$
+\end_inset
+
+'s confidence (grade) in this value.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+\bar under
+Gradecast properties:
+\series default
+\bar default
+ 
+\end_layout
+
+\begin_layout Enumerate
+If 
+\begin_inset Formula $q$
+\end_inset
+
+ is correct then 
+\begin_inset Formula $v_{p}=v$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{q}=2$
+\end_inset
+
+ for every correct 
+\begin_inset Formula $p$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+For every correct nodes 
+\begin_inset Formula $p,p'$
+\end_inset
+
+: if 
+\begin_inset Formula $c_{p}>0$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{p'}>0$
+\end_inset
+
+ then 
+\begin_inset Formula $v_{p}=v_{p'}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $|c_{p}-c_{p'}|\leq1$
+\end_inset
+
+ for every correct nodes 
+\begin_inset Formula $p$
+\end_inset
+
+, 
+\begin_inset Formula $p'$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Finite run time.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\bar under
+Notations for the Algorithm:
+\series default
+\bar default
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\left\langle j,v_{j}\right\rangle $
+\end_inset
+
+ represents that 
+\begin_inset Formula $p$
+\end_inset
+
+ received 
+\begin_inset Formula $v_{j}$
+\end_inset
+
+ from 
+\begin_inset Formula $j$
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $v_{rov2}$
+\end_inset
+
+ - be the value from 
+\begin_inset Formula $\left\{ v_{k}\right\} _{k=1}^{n}$
+\end_inset
+
+received the most after round 2.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $v_{rov3}$
+\end_inset
+
+ - be the value from 
+\begin_inset Formula $\left\{ v_{k}\right\} _{k=1}^{n}$
+\end_inset
+
+received the most after round 3.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\#rov_{2}$
+\end_inset
+
+ - the number of occurences of 
+\begin_inset Formula $rov_{1}$
+\end_inset
+
+ after round 2.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\#rov_{3}$
+\end_inset
+
+ - the number of occurences of 
+\begin_inset Formula $rov_{2}$
+\end_inset
+
+ after round 3.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+1: 
+\series bold
+if
+\series default
+ 
+\begin_inset Formula $p=q$
+\end_inset
+
+ 
+\series bold
+then
+\series default
+ 
+\begin_inset Formula $v='the\,\, input\,\, value'$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+2: 
+\series bold
+round 1:
+\series default
+ The leader 
+\begin_inset Formula $q$
+\end_inset
+
+ sends 
+\begin_inset Formula $v$
+\end_inset
+
+ to all;
+\end_layout
+
+\begin_layout Plain Layout
+3: 
+\series bold
+round 2:
+\series default
+ Node 
+\begin_inset Formula $p$
+\end_inset
+
+ sends the value received from 
+\begin_inset Formula $q$
+\end_inset
+
+ to all;
+\end_layout
+
+\begin_layout Plain Layout
+4: 
+\series bold
+round 3:
+\series default
+ If 
+\begin_inset Formula $\#rov_{2}\geq2t+1$
+\end_inset
+
+ then 
+\begin_inset Formula $p$
+\end_inset
+
+ sends 
+\begin_inset Formula $v_{rov2}$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+5: 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\series bold
+if
+\series default
+ 
+\begin_inset Formula $\#rov_{3}\geq2t+1$
+\end_inset
+
+
+\series bold
+ set
+\series default
+ 
+\begin_inset Formula $v_{p}=v_{rov2}$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{p}=2$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+6: 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\series bold
+otherwise, if
+\series default
+ 
+\begin_inset Formula $\#rov_{3}\geq t+1$
+\end_inset
+
+
+\series bold
+ set
+\series default
+ 
+\begin_inset Formula $v_{p}=\#rov_{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{p}=1;$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+7: 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\series bold
+otherwise, set
+\series default
+ 
+\begin_inset Formula $v_{p}=\perp$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{p}=0;$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\family typewriter
+GRADECAST
+\family default
+(q)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\series bold
+\bar under
+
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+GRADECAST
+\family default
+ Properties Proofs:
+\end_layout
+
+\begin_layout Claim
+
+\family typewriter
+[Property 1] 
+\family default
+If 
+\begin_inset Formula $q$
+\end_inset
+
+ is correct then 
+\begin_inset Formula $v_{p}=v$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{q}=2$
+\end_inset
+
+ for every correct 
+\begin_inset Formula $p$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+If the leader (
+\begin_inset Formula $q$
+\end_inset
+
+) is a correct node then in round 2 all the correct nodes will send the
+ leaders input (
+\begin_inset Formula $v_{q}$
+\end_inset
+
+).
+ Therefore in round 3 all the correct nodes will receive 
+\begin_inset Formula $v_{q}$
+\end_inset
+
+ at least 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ times, which mean that that 
+\begin_inset Formula $v_{q}$
+\end_inset
+
+ will be chosen with confidence 
+\begin_inset Formula $c_{p}=2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Claim
+
+\family typewriter
+[Property 2] 
+\family default
+For every correct nodes 
+\begin_inset Formula $p,p'$
+\end_inset
+
+: if 
+\begin_inset Formula $c_{p}>0$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{p'}>0$
+\end_inset
+
+ then 
+\begin_inset Formula $v_{p}=v_{p'}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Proof
+After round 3, If I received 
+\begin_inset Formula $v$
+\end_inset
+
+ 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times , then certainly one of the correct nodes sent it, if I recieved
+ 
+\begin_inset Formula $v$
+\end_inset
+
+ 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ times then all the correct nodes recieved 
+\begin_inset Formula $v$
+\end_inset
+
+ at least 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times.
+ If there is no 
+\begin_inset Formula $v$
+\end_inset
+
+ that I received 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times then certainly no other node received
+\begin_inset Formula $v$
+\end_inset
+
+ 
+\begin_inset Formula $2t+1$
+\end_inset
+
+times.
+ If there is a 
+\begin_inset Formula $v$
+\end_inset
+
+ that I received 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times but not 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ times - we know that each correct nodes - if a node received a value 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times it is 
+\begin_inset Formula $v$
+\end_inset
+
+ .
+ (Because all the correct nodes sent in round 3 the same value).
+ Therefore, since after round 3, all the correct nodes that sent a value,
+ sent the same value, hence, the correct nodes that chose a value with confidenc
+e (grade) 1 certainly chose the same value.
+ Same logic for the correct nodes that received a value 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ times.
+ 
+\end_layout
+
+\begin_layout Claim
+
+\family typewriter
+[Property 3] 
+\family default
+
+\begin_inset Formula $|c_{p}-c_{p'}|\leq1$
+\end_inset
+
+ for every correct nodes 
+\begin_inset Formula $p$
+\end_inset
+
+, 
+\begin_inset Formula $p'$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proof
+If I set 
+\begin_inset Formula $c_{p}=2$
+\end_inset
+
+ for 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+then at least all the other correct nodes will receive 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+ 
+\begin_inset Formula $t+1$
+\end_inset
+
+ and chose the confidence to be 1.
+ If I set 
+\begin_inset Formula $c_{p}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+ then it can't be that another correct node set 
+\begin_inset Formula $c_{p}=2$
+\end_inset
+
+ for 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+(because at most there can be a difference of 
+\begin_inset Formula $t$
+\end_inset
+
+ in the number of times two correct nodes receive a certain value)
+\end_layout
+
+\begin_layout Claim
+
+\family typewriter
+[Property 4] 
+\family default
+Finite run time
+\end_layout
+
+\begin_layout Proof
+There are 3 rounds, i.e.
+ the run time is finite.
+\end_layout
+
+\end_body
+\end_document

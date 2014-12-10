@@ -73,11 +73,11 @@ Ex1
 \end_layout
 
 \begin_layout Author
-Sagi Kedmi
+Sagi Kedmi - 200468593,
 \begin_inset Newline newline
 \end_inset
 
-200468593
+ Gil Cohen - 313658486
 \end_layout
 
 \begin_layout Standard
@@ -198,11 +198,11 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
+<lyxtabular version="3" rows="8" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="10cm">
+<column alignment="center" valignment="top" width="5cm">
+<column alignment="center" valignment="top" width="8cm">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -319,6 +319,8 @@ Probe Request
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\emph on
 Probe Response
 \end_layout
 
@@ -356,6 +358,8 @@ Probe Response
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\emph on
 Broadcast Leadership
 \end_layout
 
@@ -405,6 +409,8 @@ Broadcast Leadership
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\emph on
 Bestow Leadership
 \end_layout
 
@@ -414,7 +420,7 @@ Bestow Leadership
 \begin_inset Text
 
 \begin_layout Plain Layout
-{bstw_leader}
+{bstw_leader,id}
 \end_layout
 
 \end_inset
@@ -438,11 +444,55 @@ If two connected components are merged, the bstw_leader message is sent
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exterior Edge Broadcast
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+{ext_edge_bcast,id,cost}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $id$
+\end_inset
+
+ is the identifier of the node, 
+\begin_inset Formula $cost$
+\end_inset
+
+ is the cost of the lowest cost edge that is sent from a node (or its sons)
+ to a different connected component.
+ (this message is sent recursively from sons to parents).
+ We'll define 
+\begin_inset Formula $cost=\epsilon$
+\end_inset
+
+ to denote that the node that sends the message has no edges that connects
+ to other connected components.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Find exteriour edge
 \end_layout
 
 \end_inset
@@ -451,7 +501,7 @@ If two connected components are merged, the bstw_leader message is sent
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+{find_ext_edge}
 \end_layout
 
 \end_inset
@@ -460,7 +510,9 @@ If two connected components are merged, the bstw_leader message is sent
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+The node that receives this mesage, send a probe message to the next lowest
+ cost edge on their neighbour list.
+ 
 \end_layout
 
 \end_inset
@@ -488,6 +540,740 @@ Protocol Specification
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Algorithm
+\end_layout
+
+\begin_layout Subsection
+High level description
+\end_layout
+
+\begin_layout Standard
+Given a connected graph of processors we try to find a spanning tree with
+ an agreed upon leader.
+ The algorithm works in phases.
+ 
+\end_layout
+
+\begin_layout Standard
+In the begining we 'dissect' the graph to connected componented with local
+ leaders (the nodes with the minimal id), in every phase the algorithm tries
+ to merge two connected components so that the nodes(processors) in the
+ newly formed connected component agree on who is the leader of the connected
+ component.
+ The algorithm ends when every nodes in the original connected graph are
+ connected with a spanning tree and that they share the same leader node.
+ 
+\end_layout
+
+\begin_layout Standard
+Every connected component has a 
+\begin_inset Formula $ccid$
+\end_inset
+
+ (connected component identifier) which is the 
+\begin_inset Formula $id$
+\end_inset
+
+ of the leader of the connected component.
+\end_layout
+
+\begin_layout Standard
+The search for a connected component to be merged with is done by finding
+ the minimal edge that connects two connected components.
+ 
+\end_layout
+
+\begin_layout Standard
+We want 'low' communication complexity (num of messages sent), so we only
+ allow merges of two connected components that are of the same size such
+ that the total number of merges is logarithmic and quadratic
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+VERIFY
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Low level description for each node
+\end_layout
+
+\begin_layout Standard
+Each node(processor) saves the following parameters:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $k$
+\end_inset
+
+ - the merge generation.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $ccid$
+\end_inset
+
+ - the identifier of the connected comonent (the id of the leader node in
+ the connected component).
+ the 
+\begin_inset Formula $ccid$
+\end_inset
+
+ is unintialized.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $parent$
+\end_inset
+
+ - the parent of the node (unintialized)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $sons\_list$
+\end_inset
+
+ - the list of the sons of the node (uninitialized)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $neihbour\_list$
+\end_inset
+
+ - the list of neighbours.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $min\_edge$
+\end_inset
+
+ - the minimal edge that crosses the connected component
+\end_layout
+
+\begin_layout Subsubsection
+On wakeup
+\end_layout
+
+\begin_layout Itemize
+Scan list of neihbours: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if you have the minmal id declare yourself as leader and send a {bcast_leader,id
+,k=1} message to those who sent you a {merge,k=0} message.
+ 
+\end_layout
+
+\begin_layout Itemize
+else: find the edge with the lowest cost , on that edge send a merge message
+ with the payload {merge,
+\begin_inset Formula $k=0$
+\end_inset
+
+} and define the node that is on the other side of that edge to be your
+ parent.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+On receiving a merge request - {merge, k'}
+\end_layout
+
+\begin_layout Itemize
+If the request had been received on the edge that you sent a merge request,
+ and you the same merge generation (your_k=k') perform a 'good merge':
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If your id is lower than the id of the node that sent the merge message,
+ you are the leader of the newly formed connected component.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+set your parent to null.
+ 
+\end_layout
+
+\begin_layout Itemize
+add the other node to your son_list
+\end_layout
+
+\begin_layout Itemize
+send a bcast_leader message - {bcast_leader, your_id, ++k} to every node
+ in your son_list
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+else: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if your_k >k': add the node to your son_list, send a bcast_leader message
+ ({bcast_leader,your_ccid,your_k}).
+ If you are in 'probing' stage - send the node a find_ext_edge message so
+ that it finds the edge with the lowest cost that crosses the newly formed
+ connected component.
+ (Essentialy, the connected component with the bigger merge generation (k)
+ absorbs the one with the smaller merge generation (k'), in this way we
+ don't need to perform a full scale merge)
+\end_layout
+
+\begin_layout Itemize
+if your_k<k' : can't be because the probe_req is not answered.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+On recieving a broadcast leadership message - {bcast_leader,
+\begin_inset Formula $ccid'$
+\end_inset
+
+, 
+\begin_inset Formula $k'$
+\end_inset
+
+ }
+\end_layout
+
+\begin_layout Itemize
+Change the your 
+\begin_inset Formula $ccid$
+\end_inset
+
+ to 
+\begin_inset Formula $ccid'$
+\end_inset
+
+, your 
+\begin_inset Formula $k$
+\end_inset
+
+ to 
+\begin_inset Formula $k'$
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Itemize
+If the sending node is not the id of your parent, add your parent to your
+ sons list.
+ (Redirection of the nodes of the tree).
+\end_layout
+
+\begin_layout Itemize
+Set your 
+\begin_inset Formula $parent$
+\end_inset
+
+ to be the id of the sending node.
+ 
+\end_layout
+
+\begin_layout Itemize
+Send the same bcast_leader message to your all of your sons (so that all
+ of them will know who is the leader) and send a f_ext_edge message so that
+ your sons will search the edge with the lowest cost that crosses the connected
+ component (i.e.
+ your sons will send a probe message to the next lowest cost edge they have
+ in their neighbor list).
+ If you have no sons -> send a probe message to the next lowest cost edge
+ you have in your neighbor list.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+On receiving a probe request - {probe_req,
+\begin_inset Formula $ccid'$
+\end_inset
+
+,
+\begin_inset Formula $k'$
+\end_inset
+
+}
+\end_layout
+
+\begin_layout Standard
+This response is being used to check weather the sending node and the receiving
+ node are on the same connected component.
+ If they're not, the sending node found an edge that crosses (points out
+ of )the connected component.
+\end_layout
+
+\begin_layout Itemize
+if your_k=k'
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if your_ccid=ccid' - send {probe_res, true}
+\end_layout
+
+\begin_layout Itemize
+if your_ccid=ccid' - send {probe_res, false}
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+if your_k > k': send a {probe_res, false} - we tell the sending node that
+ we are on a different connected component and (we let the sending node
+ the become bigger so it can be absorbed in the future)
+\end_layout
+
+\begin_layout Itemize
+if your_k < k: stand still ( do nothing, wait) and do not answer to the
+ probe_req.
+\end_layout
+
+\begin_layout Subsubsection
+On receiving a probe response - {probe_res, 
+\begin_inset Formula $v\in\{True,False\}$
+\end_inset
+
+} 
+\end_layout
+
+\begin_layout Itemize
+if 
+\begin_inset Formula $v=False$
+\end_inset
+
+ - the nodes are on a different connected component.
+ send your parent a {ext_edge_bcast, your_id, cost} message - to notify
+ him that you found an exterior edge (an edge that crosses the connected
+ component )
+\end_layout
+
+\begin_layout Itemize
+if 
+\begin_inset Formula $v=True$
+\end_inset
+
+ - the nodes are in the same connected component.
+ Send a probe message to the next lowest cost edge from your neighbour_list.
+ If there are no more edges in your neighbour list notify your parent that
+ there are not more exterior edges from you (a {ext_edge_bcast,your_id,k=
+\begin_inset Formula $\epsilon$
+\end_inset
+
+}) 
+\end_layout
+
+\begin_layout Subsubsection
+On receiving an exterior edge broadcast {ext_edge_bcast, 
+\begin_inset Formula $id'$
+\end_inset
+
+, 
+\begin_inset Formula $cost'$
+\end_inset
+
+}
+\end_layout
+
+\begin_layout Itemize
+If the cost of the edge!=
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ and it is the lowest that you've received from your sons and edges from
+ yourself - keep the cost as the lowest edge cost.
+ 
+\end_layout
+
+\begin_layout Itemize
+If you received an ext_edge_bcast from all of you sons, check if the lowest
+ edge cost that you received is lower than the next lowest cost edge from
+ your neighbours list.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if it is: send your parent an ext_edge_bcast notifying him about the lowest
+ cost edge that crosses the connected component.
+\end_layout
+
+\begin_layout Itemize
+if it's not: send a probe message on the next lowest cost edge from your
+ neighbour list 
+\end_layout
+
+\begin_layout Itemize
+if you have no parent and the lowest cost edge is connected to on of you
+ sons - send the son a bstw_leader message otherwise if the lowest cost
+ edge is connected to you and its cost!=
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ send a merge message through it with your id as the leader of this connected
+ component.
+ Finally, if the lowest cost edge cost=
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ (i.e.
+ there is no edge that crosses the connected component) the algorithm has
+ finished.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+On receiving a bestow leadership {bstw_leader}
+\end_layout
+
+\begin_layout Itemize
+If the lowest cost edge in the last exterior edge find procedure has came
+ out of your node - you are the leader of the connected component.
+ Put your parent in your son_list and set your parent to null.
+ Send your sons a bcast_leader message - {bcast_leader, your_id, your _k}
+ - so that all your sons will know that you are the leader and they will
+ redirect their edges toward you.
+ Send a merge message through that lowest cost edge.
+ 
+\end_layout
+
+\begin_layout Itemize
+If some other node notified you about the lowest cost edge (i.e.
+ the edge doesn't come out from you) send the same bstw_leader message to
+ the son of which the ext_edge_bcast came from (which notified you of the
+ lowest cost edge) - in this way the bstw_leader message will be send recursivel
+y from a parent to a single son untill it reaches the node the lowest cost
+ edge is connect to.
+ 
+\end_layout
+
+\begin_layout Section
+High level proofs
+\end_layout
+
+\begin_layout Subsection
+In a connected component with a merge generation k there are at least 
+\begin_inset Formula $2^{k}$
+\end_inset
+
+ nodes
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+We'll need it to prove the communication complexity of the algorithm.
+ 
+\end_layout
+
+\begin_layout Standard
+We'll prove it with induction over k:
+\end_layout
+
+\begin_layout Standard
+For k=0, every connected component is of size one ( it was initialized in
+ that way) 
+\end_layout
+
+\begin_layout Standard
+For k=1, the connceted component had been merged once and therefore it is
+ made up from two nodes.
+ 
+\end_layout
+
+\begin_layout Standard
+Lets assume that the induction hypothesis is true for k' and prove for k'+1:
+ if a 'good merge' had occurd - the connected comopnents can only be merged
+ if they have the same merge generation.
+ By the induction hypothesis each of the connected components has at least
+ 
+\begin_inset Formula $2^{k'}$
+\end_inset
+
+nodes, therefore the newly merged connected component has 
+\begin_inset Formula $2\cdot2^{k'}=2^{k'+1}$
+\end_inset
+
+ nodes.
+ [More than that, if a smaller connected component had been absorbed to
+ a connected component with a k generation, then there are at least 
+\begin_inset Formula $2^{k}$
+\end_inset
+
+ nodes] 
+\end_layout
+
+\begin_layout Subsection
+No deadlocks can emerge
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+Proof
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Lets assume by contradiction that the algorithm is in a deadlock - i.e.
+ the number of connected component cannot be decreased.
+ Lets look on the connected component with the lowest merge generation (k).
+ Every probe request messages that are sent by this connected component
+ must be answered because as the merge generation of other connected components
+ is either the same or higher (As defined in the above protocol) and therefore
+ the connected component continues to develop:
+\end_layout
+
+\begin_layout Itemize
+If it sent a merge message to a connected component with a bigger merge
+ generation - the bigger connected component will absorb it.
+ 
+\end_layout
+
+\begin_layout Itemize
+If it sent a merge message to a connected component of the same generation
+ - a 'Good Merge' procedure will occur and newly merged connected component
+ would be constructed.
+ 
+\end_layout
+
+\begin_layout Standard
+In both cases the number of connected components is decreased (untill we
+ have one connected component - a spanning tree of the graph), in contradiction
+ to our assumption that the algorithm is in deadlock and that the number
+ of connected components cannot be decreased.
+\end_layout
+
+\begin_layout Subsection
+The algorithm finishes (converges)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+Proof
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+.
+ Lets assume by contradiction that the algorithm never finishes to run (
+ after all of nodes were awaken ).
+ Earlier we've seen that no deadlocks can emerge - i.e.
+ the number of connected components will decrease until we're left with
+ one big spanning tree that connects one connected component.
+ When there will be only one connected component, every probe request message
+ will be answered with a probe response which tells the sender of the probe
+ request that they are in the same connected component.
+ Therefore every node that searches for an exterior edge from the connected
+ component will go through all of its neighbour list and in the end it will
+ pass its parent the cost of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ - to denote that it has no exterior edges that crosses the connected component.
+ Eventually the search for an exterior node will converge to the leader
+ - i.e.
+ the leader will receive from each of its sons an ext_edge_bcsat message
+ with the cost of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ - which will cause the leader to stop the running of the algorithm.
+ In contradiction to our assumption - that the algorithm never finishes.
+ 
+\end_layout
+
+\begin_layout Subsection
+When the algorithm finishes, we're left with a spanning tree
+\end_layout
+
+\begin_layout Standard
+As Danny had explained in class, for the first iteration no cycles with
+ more than 2 nodes can exist.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Claim:
+\series default
+ after a 'good merge' a no cycle other than a degenerated cycle (two edges
+ between two nodes) can be formed.
+\begin_inset Newline newline
+\end_inset
+
+
+\emph on
+Proof.
+ 
+\emph default
+The edge that is added to both connected components (the edge that connects
+ the connected components after they are merged).
+ Assume by contradiction that when this edge is added it creates a cycle
+ (non-degenerated cycle).
+ If when the edge is added it created a cycle it means that there exist
+ an other edge that connects between the connected component which contradicts
+ our assumption that there are two 'disconnected' connected components.
+ Therefore, in any stage a cycle cannot be created.
+ We've seen in the previous proof that when the algorithm finishes there
+ is one big connected component that contains all of the nodes of the graph,
+ hence a cycle-less connected graph is created which is the definition of
+ a spanning tree.
+\end_layout
+
+\begin_layout Subsection
+When the algorithm finishes all the nodes share an agreed upon leader 
+\end_layout
+
+\begin_layout Standard
+As we've seen earlier ( we proved it above ) when the algorithm finishes
+ there is one connected component.
+ There are two merge scenarios:
+\end_layout
+
+\begin_layout Enumerate
+'Good merge' - the connected components have the same merge generation -
+ when they are merged a broadcast leader (bcast_leader) message is being
+ sent from a parent to its sons (recursively ) notifies them to change their
+ leader, therefore every node in the newly formed connected component will
+ share the same leader.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Absobrption - When a connected component with a smaller merge generation
+ is absrobed by a connected component with a bigger merge generation a broadcast
+ leader message is sent to the root (leader) of the smaller connected component
+ which then forwards it to its sons.
+ 
+\end_layout
+
+\begin_layout Section
+Communication complexity - number of messages
+\end_layout
+
+\begin_layout Standard
+Note: after the algorithm finishes, the merge generation of the final connected
+ component is at most 
+\begin_inset Formula $log_{2}|V|$
+\end_inset
+
+ - because a 'good merge' is the only reason to increment the merge generation
+ value, and this process can only happen between two connected components
+ that have the same merge generation.
+ 
+\end_layout
+
+\begin_layout Itemize
+Numer of exterior edge messages
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+This message is only sent after the merge generation value is incremented.
+ As we've explained earlier the maximal value of the merge generation is
+ 
+\begin_inset Formula $log_{2}|V|$
+\end_inset
+
+ .
+ Therefore every node will get at maximum 
+\begin_inset Formula $|V|log_{2}|V|$
+\end_inset
+
+ broadcast leadership messages.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Number of broadcast leadership messages
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+This message is only sent after the merge generation value is incremented.
+ As we've explained earlier the maximal value of the merge generation is
+ 
+\begin_inset Formula $log_{2}|V|$
+\end_inset
+
+ .
+ Therefore every node will get at maximum 
+\begin_inset Formula $|V|log_{2}|V|$
+\end_inset
+
+ broadcast leadership messages.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Number of bestow leadership messages
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+This message is only sent after a lowest cost edge that crosses the connected
+ component is found.
+ As explained earlier the exterior edge message is only sent after the merge
+ generation value is incremented - which is bounded by 
+\begin_inset Formula $log_{2}|V|$
+\end_inset
+
+.
+ therefore every node will receive at max 
+\begin_inset Formula $|V|log_{2}|V|$
+\end_inset
+
+ bestow leadership messages.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Number of probe request / respone messages
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Every node sends on probe message to every neighbor in its list, and receives
+ a response - therefore 
+\begin_inset Formula $O(|E|)$
+\end_inset
+
+ messages.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Number of merge messages
 \end_layout
 
 \end_body
