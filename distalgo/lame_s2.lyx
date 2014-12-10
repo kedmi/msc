@@ -103,95 +103,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Section
-Preliminaries
-\end_layout
-
-\begin_layout Subsection
-The 
-\emph on
-Broadcast
-\emph default
- Problem
-\end_layout
-
-\begin_layout Standard
-//TODO
-\end_layout
-
-\begin_layout Subsection
-The
-\emph on
- Consensus
-\emph default
- Problem
-\end_layout
-
-\begin_layout Standard
-In standard distributed algorithms literature the problem we face is known
- as the 
-\emph on
-Agreement / Consensus 
-\emph default
-problem.
-\end_layout
-
-\begin_layout Definition
-(
-\emph on
-Consensus
-\emph default
-).
- A protocol for n parties 
-\begin_inset Formula $\mathcal{P}=\{P_{1},...,P_{n}\}$
-\end_inset
-
- where a distinguished leader 
-\begin_inset Formula $G\in\mathcal{P}$
-\end_inset
-
- wishes to broadcast an initial value 
-\emph on
-m
-\emph default
- solves the 
-\emph on
-Consensus 
-\emph default
-problem if it conforms with the following two conditions:
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Agreement
-\series default
- - If a correct node signals that 
-\emph on
-G
-\emph default
- broadcasted a certain value, all correct nodes will signal the same.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Validity 
-\series default
-- If the leader is correct, all correct nodes will signal that it has broadcaste
-d 
-\emph on
-m
-\emph default
-.
- 
-\end_layout
-
-\begin_layout Section
-Byzantine Consensus using Gradecast
-\end_layout
-
-\begin_layout Subsection
-Gradecast Algorithm
+Q1 - Byzantine Consensus using Gradecast
 \end_layout
 
 \begin_layout Standard
@@ -216,9 +128,13 @@ Byzantine
 .
  Communication assumed to be synchronous.
  The communication graph is complete graph.
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
+\begin_layout Subsection
+Gradecast Algorithm
+\end_layout
+
+\begin_layout Standard
 
 \series bold
 \bar under
@@ -972,477 +888,290 @@ Byzantine Consensus Algorithm
 \end_layout
 
 \begin_layout Standard
-We mainly used the lecture notes and this article 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "dolev20"
-
-\end_inset
-
-.
- The idea behind the 
-\family typewriter
-BYZ_CON
-\family default
- algorithm is to make every processor to use 
-\family typewriter
-GRADECAST 
-\family default
-and reach a consensus.
- At each iteration a processor 
-\begin_inset Formula $p$
-\end_inset
-
- will gradecast its own value, and then consider the values it received:
-\end_layout
-
-\begin_layout Itemize
-Any node that gradecasted a value with confidence 
-\begin_inset Formula $\leq1$
-\end_inset
-
- will be marked as faulty processor, and will be ignored for the rest of
- the algorithm.
-\end_layout
-
-\begin_layout Itemize
-Any value with confidence 
-\begin_inset Formula $\geq1$
-\end_inset
-
- will be considered, and processor 
-\begin_inset Formula $p$
-\end_inset
-
- will update its own value to be the majority of values with confidence
- 
-\begin_inset Formula $\geq1$
-\end_inset
-
-.
+Our byzantine consensus algoirthm will use the gradecast algorithm in order
+ to reach a consensus.
  
 \end_layout
 
-\begin_layout Standard
-We'll denote by 
-\begin_inset Formula $EVIL$
-\end_inset
-
- the set of faulty nodes that are ignored by a processor when running 
-\family typewriter
-GRADECAST.
- 
-\begin_inset Formula $\cup EVIL_{r}$
-\end_inset
-
- 
-\family default
-is the union of all 
-\begin_inset Formula $EVIL$
-\end_inset
-
- variables for non-faulty nodes at the begining of iteration 
-\begin_inset Formula $r$
-\end_inset
-
- .
- 
-\begin_inset Formula $\cap EVIL_{r}$
-\end_inset
-
- is the intersection of all 
-\begin_inset Formula $EVIL$
-\end_inset
-
- variables for non-faulty nodes at the beginning of iteration 
-\begin_inset Formula $r$
-\end_inset
-
- .
- 
+\begin_layout Subsubsection
+Algorithm presented in class
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float algorithm
-placement H
-wide false
-sideways false
-status open
+\begin_layout Enumerate
 
-\begin_layout Plain Layout
-1: 
 \series bold
-set
+Phase 1:
 \series default
- 
-\emph on
-EVIL:=
-\begin_inset Formula $\phi$
-\end_inset
-
-;
-\emph default
-
-\begin_inset Newline newline
-\end_inset
-
-2: 
-\series bold
-for 
-\begin_inset Formula $r=1$
-\end_inset
-
- to 
-\begin_inset Formula $t+1$
-\end_inset
-
- do
-\series default
-:
+ Concurrently, each processor broadcasts its initial value using Gradecast.
 \end_layout
 
-\begin_layout Plain Layout
-2: 
+\begin_layout Enumerate
+
 \series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- 
-\family typewriter
-GRADECAST(
-\begin_inset Formula $p$
-\end_inset
-
-,
-\begin_inset Formula $EVIL$
-\end_inset
-
-)
-\family default
- with input value 
-\begin_inset Formula $v$
-\end_inset
-
-.
- 
-\begin_inset Newline newline
-\end_inset
-
-3:
-\series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- // 
-\begin_inset Formula $<q,v,c>$
-\end_inset
-
- represent that 
-\begin_inset Formula $q$
-\end_inset
-
- gradecasted 
-\begin_inset Formula $v$
-\end_inset
-
- with confidence 
-\begin_inset Formula $c$
-\end_inset
-
-;
+Phase 2: 
 \end_layout
 
-\begin_layout Plain Layout
-4:
-\series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- // 
-\begin_inset Formula $maj$
-\end_inset
-
- is the value received the most among values with confidence 
-\begin_inset Formula $\geq1$
-\end_inset
-
-;
-\begin_inset Newline newline
-\end_inset
-
-5:
-\series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- // 
-\begin_inset Formula $\#maj$
-\end_inset
-
- is the number of occurences of 
-\begin_inset Formula $maj$
-\end_inset
-
- with confidence 
-\begin_inset Formula $2$
-\end_inset
-
-;
-\end_layout
-
-\begin_layout Plain Layout
-6:
-\series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- 
-\series bold
-set 
-\begin_inset Formula $v=maj$
-\end_inset
-
-;
-\end_layout
-
-\begin_layout Plain Layout
-7: 
-\series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- 
-\series bold
-set 
-\series default
-
-\begin_inset Formula $EVIL=EVIL\cup\left\{ q\ |\ \mbox{received \ensuremath{<q,*,c>}with \ensuremath{c}\leq1}\right\} $
-\end_inset
-
-;
-\end_layout
-
-\begin_layout Plain Layout
-8:
-\series bold
-
-\begin_inset space \hspace*{}
-\length 1cm
-\end_inset
-
-
-\series default
- 
-\series bold
-if 
-\series default
-
-\begin_inset Formula $\#maj\geq2t+1$
-\end_inset
-
- then break;
-\end_layout
-
-\begin_layout Plain Layout
-10: 
-\series bold
-end for
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
-\series default
-11: 
-\series bold
-if 
-\series default
-executed for 
-\begin_inset Formula $<t+1$
-\end_inset
-
- iterations then participate in one more iteration;
-\end_layout
-
-\begin_layout Plain Layout
-12: 
-\series bold
-return 
-\series default
-
-\begin_inset Formula $v$
-\end_inset
-
-;
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\family typewriter
-BYZ_CON
-\family default
-(p)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+\begin_layout Section
+Q2 - 
 \end_layout
 
 \begin_layout Claim
-\begin_inset CommandInset label
-LatexCommand label
-name "claim5"
-
+There is no Gradecast algorithm that can be solved with 
+\begin_inset Formula $n<3t+1$
 \end_inset
 
-If at the beginning of some iteration all non-faulty nodes have the same
- value 
-\begin_inset Formula $v$
-\end_inset
-
- , then all non-faulty nodes that are still in the main loop exit the loop
- and update their value to 
-\begin_inset Formula $v$
-\end_inset
-
-.
  
 \end_layout
 
 \begin_layout Proof
-all non-faulty nodes see at least 
-\begin_inset Formula $2t+1$
-\end_inset
-
- copies of 
-\begin_inset Formula $v$
-\end_inset
-
- with confidence 
-\begin_inset Formula $2$
+Recall that in class we've shown that there is no algorithm that solves
+ the consensus problem for 
+\begin_inset Formula $n<3t+1$
 \end_inset
 
 .
- By line 6 they all update their value to 
-\begin_inset Formula $v$
-\end_inset
-
-, and by line 8 they break the loop, set their value to 
-\begin_inset Formula $v$
-\end_inset
-
- and exit.
- 
-\end_layout
-
-\begin_layout Theorem
-
-\family typewriter
-BYZ_CON solves the Byzantine Consensus Problem
-\end_layout
-
-\begin_layout Proof
-We need to show that 
-\family typewriter
-BYZ_CON 
-\family default
-passes the 
-\emph on
-Validity 
-\emph default
-and 
-\emph on
-Agreement 
-\emph default
-conditions.
- 
-\begin_inset Newline newline
-\end_inset
-
-
-\bar under
-Validity:
-\bar default
- We need to show that if all non-faulty nodes start with the same input
- value 
-\begin_inset Formula $v$
-\end_inset
-
- , then the output of the algoritm is 
-\begin_inset Formula $v$
+ Assume by contradiction that there is a Gradecast algorithm that can be
+ solved with 
+\begin_inset Formula $n<3t+1$
 \end_inset
 
  .
- By Claim 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "claim5"
-
+ The Byzantine Consensus algorithm that was shown in class uses a Gradecast
+ algorithm with 
+\begin_inset Formula $n\geq3t+1$
 \end_inset
 
- we know that if at some iteration all non-faulty nodes have the same value,
- they set this value to be their stored value and exits.
- 
-\begin_inset Newline newline
+, which induces that same inequality to the consensus algorithm - why? because
+ the only place the Consensus algorithm relied on the inequality is in Gradecast.
+ So if there a gradecast algorithm with 
+\begin_inset Formula $n<3t+1$
 \end_inset
 
-
-\bar under
-Agreement:
-\bar default
- We need to show that if all non-faulty prcessors start with the same input
- value 
-\begin_inset Formula $v$
+, we can use the byzantine consensus algorithm shown in class with this
+ gradecast algorithm and have a byzantine consensus algorithm with 
+\begin_inset Formula $n<3t+1$
 \end_inset
 
- , then the output value of the algorithm is 
-\begin_inset Formula $v$
-\end_inset
-
- .
- 
+ in contradiction to what we proved in class.
 \end_layout
 
 \begin_layout Section
 Q3
 \end_layout
 
+\begin_layout Itemize
+Q: Assume the existence of a shared coin, such that at the begining of every
+ round 
+\begin_inset Formula $k$
+\end_inset
+
+, there is a 
+\begin_inset Formula $C_{k}$
+\end_inset
+
+- a fair coin that provides an identical value at all correct processors.
+ Assume that before sending the messages of round 
+\begin_inset Formula $k$
+\end_inset
+
+ the adversary that decides what the faulty node do has no clue of what
+ 
+\begin_inset Formula $C_{k}$
+\end_inset
+
+ is going to be .
+ 
+\end_layout
+
+\begin_layout Itemize
+Assumptions: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The model: the system is synchronous, message passing, 
+\series bold
+fail-stop 
+\series default
+faults.
+ 
+\end_layout
+
+\begin_layout Itemize
+The network: a complete graph, synchronus and reliable.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The Algorithm:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+
+\series bold
+Round 1: 
+\series default
+Each node broadcasts its own value to the other processors.
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Round 2: 
+\series default
+The system is synchronous so after round 1, each processor has a vector
+ of of values that was received from other processors.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If a processor's vector contains at least 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ idential values 
+\begin_inset Formula $v_{id}$
+\end_inset
+
+ then 
+\series bold
+set 
+\begin_inset Formula $v=v_{id}$
+\end_inset
+
+ 
+\series default
+, broadcast 
+\begin_inset Formula $<v_{id},msg>$
+\end_inset
+
+ where 
+\begin_inset Formula $msg$
+\end_inset
+
+ is an indication that I made my decision and
+\series bold
+ return
+\series default
+.
+
+\series bold
+ 
+\end_layout
+
+\begin_layout Enumerate
+If a processor's vector contains at least 
+\begin_inset Formula $t+1$
+\end_inset
+
+ identical values 
+\begin_inset Formula $v_{id}$
+\end_inset
+
+ then 
+\series bold
+set 
+\begin_inset Formula $v=v_{id}$
+\end_inset
+
+
+\series default
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+
+\series bold
+Round 3: 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If a packet from processor 
+\begin_inset Formula $p$
+\end_inset
+
+ with decided value 
+\begin_inset Formula $v_{i}$
+\end_inset
+
+ 
+\begin_inset Formula $<v_{i},msg_{p}>$
+\end_inset
+
+ was received and 
+\begin_inset Formula $v=v_{i}$
+\end_inset
+
+ 
+\series bold
+return 
+\end_layout
+
+\begin_layout Enumerate
+Otherwise, 
+\series bold
+set 
+\begin_inset Formula $v=C_{3}$
+\end_inset
+
+
+\series default
+.
+ 
+\series bold
+return
+\series default
+ .
+ 
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Proof:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Observation 1: if there is a processor that recieved 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ times the same value, then every good processor has recieved that same
+ value at least 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times.
+ Why? Because there are 
+\begin_inset Formula $t$
+\end_inset
+
+ evil processors which means that if a processor recieved a value 
+\begin_inset Formula $2t+1$
+\end_inset
+
+ times at least 
+\begin_inset Formula $t+1$
+\end_inset
+
+ good processors has sent that value - and because they are good, each processor
+ recieved that value at least 
+\begin_inset Formula $t+1$
+\end_inset
+
+ times.
+ 
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Randomized Byzantine Generals [With Shared Coin]
 \end_layout
