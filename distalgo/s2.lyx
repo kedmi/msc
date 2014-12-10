@@ -85,7 +85,7 @@ Sagi Kedmi, ID=200468593
 \begin_inset Newline newline
 \end_inset
 
-Gil Cohen, ID=?
+Gil Cohen, ID=313658486
 \end_layout
 
 \begin_layout Date
@@ -93,8 +93,29 @@ Dec.
  1, 2014
 \end_layout
 
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Preliminaries
+\end_layout
+
+\begin_layout Subsection
+The 
+\emph on
+Broadcast
+\emph default
+ Problem
+\end_layout
+
+\begin_layout Standard
+Find definition.
 \end_layout
 
 \begin_layout Subsection
@@ -166,7 +187,7 @@ m
 \end_layout
 
 \begin_layout Section
-Question 1 - Gradecast
+Byzantine Consensus using Gradecast
 \end_layout
 
 \begin_layout Subsection
@@ -403,6 +424,22 @@ placement H
 wide false
 sideways false
 status open
+
+\begin_layout Plain Layout
+0: 
+\series bold
+Blacklist 
+\series default
+each processor 
+\begin_inset Formula $n\in IGNORE_{q}$
+\end_inset
+
+ , and 
+\series bold
+ignore 
+\series default
+its messages.
+\end_layout
 
 \begin_layout Plain Layout
 1: 
@@ -668,15 +705,19 @@ otherwise, set
 \family typewriter
 GRADECAST
 \family default
-(q)
+(
+\begin_inset Formula $q$
+\end_inset
+
+, 
+\begin_inset Formula $IGNORE_{q}$
+\end_inset
+
+)
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -924,6 +965,270 @@ Finite run time
 \begin_layout Proof
 There are 3 rounds, i.e.
  the run time is finite.
+\end_layout
+
+\begin_layout Subsection
+Byzantine Consensus Algorithm
+\end_layout
+
+\begin_layout Standard
+We mainly used the lecture notes and this article 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dolev20"
+
+\end_inset
+
+.
+ The idea behind the 
+\family typewriter
+BYZ_CON
+\family default
+ algorithm is to make every processor to use 
+\family typewriter
+GRADECAST 
+\family default
+and reach a consensus.
+ At each iteration a processor 
+\begin_inset Formula $p$
+\end_inset
+
+ will gradecast its own value, and then consider the values it received:
+\end_layout
+
+\begin_layout Itemize
+Any node that gradecasted a value with confidence 
+\begin_inset Formula $\leq1$
+\end_inset
+
+ will be marked as faulty processor, and will be ignored for the rest of
+ the algorithm.
+\end_layout
+
+\begin_layout Itemize
+Any value with confidence 
+\begin_inset Formula $\geq1$
+\end_inset
+
+ will be considered, and processor 
+\begin_inset Formula $p$
+\end_inset
+
+ will update its own value to be the majority of values with confidence
+ 
+\begin_inset Formula $\geq1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+1: 
+\series bold
+set
+\series default
+ 
+\emph on
+EVIL:=
+\begin_inset Formula $\phi$
+\end_inset
+
+;
+\emph default
+
+\begin_inset Newline newline
+\end_inset
+
+2: 
+\series bold
+for 
+\begin_inset Formula $r=1$
+\end_inset
+
+ to 
+\begin_inset Formula $t+1$
+\end_inset
+
+ do
+\series default
+:
+\end_layout
+
+\begin_layout Plain Layout
+2: 
+\series bold
+
+\begin_inset space \hspace*{}
+\length 1cm
+\end_inset
+
+
+\series default
+ 
+\family typewriter
+GRADECAST(
+\begin_inset Formula $p$
+\end_inset
+
+,
+\begin_inset Formula $EVIL$
+\end_inset
+
+)
+\family default
+ with input value 
+\begin_inset Formula $v$
+\end_inset
+
+.
+ 
+\begin_inset Newline newline
+\end_inset
+
+3:
+\series bold
+
+\begin_inset space \hspace*{}
+\length 1cm
+\end_inset
+
+
+\series default
+ // 
+\begin_inset Formula $<q,v,c>$
+\end_inset
+
+ represent that 
+\begin_inset Formula $q$
+\end_inset
+
+ gradecasted 
+\begin_inset Formula $v$
+\end_inset
+
+ with confidence 
+\begin_inset Formula $c$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+4:
+\series bold
+
+\begin_inset space \hspace*{}
+\length 1cm
+\end_inset
+
+
+\series default
+ // 
+\begin_inset Formula $maj$
+\end_inset
+
+ is the value received the most among values with confidence 
+\begin_inset Formula $\geq1$
+\end_inset
+
+;
+\begin_inset Newline newline
+\end_inset
+
+5:
+\series bold
+
+\begin_inset space \hspace*{}
+\length 1cm
+\end_inset
+
+
+\series default
+ // 
+\begin_inset Formula $\#maj$
+\end_inset
+
+ is the number of occurences of 
+\begin_inset Formula $maj$
+\end_inset
+
+ with confidence 
+\begin_inset Formula $2$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+6: 
+\series bold
+set 
+\begin_inset Formula $v=maj$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Plain Layout
+7: 
+\begin_inset Formula $EVIL=EVIL\cup\left\{ q\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+10: 
+\series bold
+end for
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\family typewriter
+BYZ_CON
+\family default
+(p)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Q3
+\end_layout
+
+\begin_layout Section
+Randomized Byzantine Generals [With Shared Coin]
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "s2"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
